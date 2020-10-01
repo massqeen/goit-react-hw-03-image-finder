@@ -10,11 +10,15 @@ class App extends Component {
     images: [],
     loading: false,
     error: null,
-    searchQuery: '',
+    searchQuery: 'nature',
     page: 1,
     largeImageUrl: null,
     showModal: false,
   };
+
+  componentDidMount() {
+    this.fetchImages();
+  }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     const prevQuery = prevState.searchQuery;
@@ -69,9 +73,9 @@ class App extends Component {
         {/*  />*/}
         {/*)}*/}
 
-        {/*{images.length > 0 && <ImageList images={images} />}*/}
+        {images.length > 0 && <ImageGallery images={images} />}
         {/*{loading && <Spinner />}*/}
-        <ImageGallery></ImageGallery>
+
         {images.length > 0 && !loading && (
           <button type="button" onClick={this.fetchImages}>
             Load more
