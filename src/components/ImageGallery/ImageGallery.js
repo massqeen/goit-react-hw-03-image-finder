@@ -2,7 +2,7 @@ import React from 'react';
 import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
 import styles from './ImageGallery.module.css';
 
-const ImageGallery = ({ images }) => {
+const ImageGallery = ({ images, openModal, onSetImgData }) => {
   return (
     <ul className={styles.gallery}>
       {images.map((img) => {
@@ -10,8 +10,11 @@ const ImageGallery = ({ images }) => {
         return (
           <ImageGalleryItem
             key={img.id}
-            url={img.webformatURL}
+            urlPreview={img.webformatURL}
+            urlFull={img.largeImageURL}
             tags={img.tags}
+            openModal={openModal}
+            onSetImgData={onSetImgData}
           />
         );
       })}

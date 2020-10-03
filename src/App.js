@@ -3,7 +3,9 @@ import Container from './components/Container/Container';
 import imagesApi from './api/images-api';
 import Searchbar from './components/Searchbar/Searchbar';
 import ImageGallery from './components/ImageGallery/ImageGallery';
+import Button from './components/Button/Button';
 import Modal from './components/Modal/Modal';
+import Spinner from './components/Spinner';
 
 class App extends Component {
   state = {
@@ -13,6 +15,7 @@ class App extends Component {
     searchQuery: 'nature',
     page: 1,
     largeImageUrl: null,
+    modalImgTags: null,
     showModal: false,
   };
 
@@ -29,6 +32,13 @@ class App extends Component {
     }
   }
 
+  scrollToBottom = () => {
+    window.scrollTo({
+      top: document.documentElement.scrollHeight,
+      behavior: 'smooth',
+    });
+  };
+
   fetchImages = () => {
     const { searchQuery, page } = this.state;
 
@@ -36,12 +46,15 @@ class App extends Component {
 
     imagesApi
       .fetchImages({ searchQuery, page })
-      .then((images) =>
+      .then((images) => {
         this.setState((prevState) => ({
           images: [...prevState.images, ...images],
           page: prevState.page + 1,
-        }))
-      )
+        }));
+        if (page !== 1) {
+          this.scrollToBottom();
+        }
+      })
       .catch((error) => this.setState({ error }))
       .finally(() => this.setState({ loading: false }));
   };
@@ -54,6 +67,10 @@ class App extends Component {
     });
   };
 
+  setModalImgData = ({ urlFull, tags }) => {
+    this.setState({ largeImageUrl: urlFull, modalImgTags: tags });
+  };
+
   toggleModal = () => {
     this.setState(({ showModal }) => ({
       showModal: !showModal,
@@ -61,7 +78,14 @@ class App extends Component {
   };
 
   render() {
-    const { images, loading, error, showModal } = this.state;
+    const {
+      images,
+      loading,
+      error,
+      showModal,
+      largeImageUrl,
+      modalImgTags,
+    } = this.state;
 
     return (
       <Container>
@@ -73,16 +97,22 @@ class App extends Component {
         {/*  />*/}
         {/*)}*/}
 
-        {images.length > 0 && <ImageGallery images={images} />}
-        {/*{loading && <Spinner />}*/}
+        {images.length > 0 && (
+          <ImageGallery
+            images={images}
+            openModal={this.toggleModal}
+            onSetImgData={this.setModalImgData}
+          />
+        )}
+        {loading && <Spinner />}
 
         {images.length > 0 && !loading && (
-          <button type="button" onClick={this.fetchImages}>
-            Load more
-          </button>
+          <Button onLoadMore={this.fetchImages} />
         )}
         {showModal && (
-          <Modal onClose={this.toggleModal}>Здесь будет изображение</Modal>
+          <Modal onClose={this.toggleModal}>
+            <img src={largeImageUrl} alt={modalImgTags} />
+          </Modal>
         )}
       </Container>
     );

@@ -7,3 +7,10 @@
   list-style: none;
   margin: 0 auto;
 }
+
+@media (max-width: 400px) {
+  .gallery {
+    max-width: calc(100vw - 20px);
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+}
