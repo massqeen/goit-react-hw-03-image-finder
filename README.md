@@ -1,2 +1,3 @@
-## React studying
-# form component, ToDo-s (phone book), components lifecycle, storing contacts in localStorage 
+### React studying
+## components lifecycle, REST API, Pixabay, image search, react spinners, modal
+# to run in dev mode - npm start
