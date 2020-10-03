@@ -91,11 +91,7 @@ class App extends Component {
       <Container>
         <Searchbar onSubmit={this.handleSearchFormSubmit} />
 
-        {/*{error && (*/}
-        {/*  <Notification*/}
-        {/*    message={`Whoops, something went wrong: ${error.message}`}*/}
-        {/*  />*/}
-        {/*)}*/}
+        {error && <p>{`Whoops, something went wrong. ${error.message}`}</p>}
 
         {images.length > 0 && (
           <ImageGallery
