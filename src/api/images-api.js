@@ -7,11 +7,11 @@ const fetchImages = ({ searchQuery = '', page = 1, pageSize = 12 }) => {
       &image_type=photo&orientation=horizontal`
   )
     .then((res) => res.json())
-    .then(({ hits: images }) => {
+    .then(({ hits: images, totalHits }) => {
       if (!images.length) {
         throw new Error('Unfortunately, your request not found.');
       }
-      return images;
+      return { totalHits, images };
     });
 };
 

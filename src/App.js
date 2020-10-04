@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
-import Container from './components/Container/Container';
-import imagesApi from './api/images-api';
-import Searchbar from './components/Searchbar/Searchbar';
-import ImageGallery from './components/ImageGallery/ImageGallery';
 import Button from './components/Button/Button';
+import Container from './components/Container/Container';
+import ImageGallery from './components/ImageGallery/ImageGallery';
+import imagesApi from './api/images-api';
 import Modal from './components/Modal/Modal';
+import Searchbar from './components/Searchbar/Searchbar';
 import Spinner from './components/Spinner';
 
 class App extends Component {
   state = {
     images: [],
+    totalImages: null,
     loading: false,
     error: null,
     searchQuery: 'nature',
@@ -46,10 +47,11 @@ class App extends Component {
 
     imagesApi
       .fetchImages({ searchQuery, page })
-      .then((images) => {
+      .then(({ totalHits, images }) => {
         this.setState((prevState) => ({
           images: [...prevState.images, ...images],
           page: prevState.page + 1,
+          totalImages: totalHits,
         }));
         if (page !== 1) {
           this.scrollToBottom();
@@ -79,6 +81,7 @@ class App extends Component {
 
   render() {
     const {
+      totalImages,
       images,
       loading,
       error,
@@ -100,11 +103,13 @@ class App extends Component {
             onSetImgData={this.setModalImgData}
           />
         )}
+
         {loading && <Spinner />}
 
-        {images.length > 0 && !loading && (
+        {images.length > 0 && !loading && totalImages > images.length && (
           <Button onLoadMore={this.fetchImages} />
         )}
+
         {showModal && (
           <Modal onClose={this.toggleModal}>
             <img src={largeImageUrl} alt={modalImgTags} />
