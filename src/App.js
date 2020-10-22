@@ -66,6 +66,7 @@ class App extends Component {
       searchQuery: query,
       page: 1,
       images: [],
+      error: false,
     });
   };
 
