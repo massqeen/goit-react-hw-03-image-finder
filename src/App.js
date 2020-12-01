@@ -1,8 +1,8 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Button from './components/Button/Button';
 import Container from './components/Container/Container';
 import ImageGallery from './components/ImageGallery/ImageGallery';
-import imagesApi from './api/images-api';
+import fetchAPI from './api/images-api';
 import Modal from './components/Modal/Modal';
 import Searchbar from './components/Searchbar/Searchbar';
 import Spinner from './components/Spinner';
@@ -45,8 +45,7 @@ class App extends Component {
 
     this.setState({ loading: true });
 
-    imagesApi
-      .fetchImages({ searchQuery, page })
+    fetchAPI({ searchQuery, page })
       .then(({ totalHits, images }) => {
         this.setState((prevState) => ({
           images: [...prevState.images, ...images],

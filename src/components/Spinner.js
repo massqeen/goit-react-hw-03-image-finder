@@ -1,4 +1,4 @@
-import React from 'react';
+import { Component } from 'react';
 import { css } from '@emotion/core';
 import PacmanLoader from 'react-spinners/PacmanLoader';
 
@@ -9,7 +9,7 @@ const override = css`
   border-color: red;
 `;
 
-class Spinner extends React.Component {
+class Spinner extends Component {
   constructor(props) {
     super(props);
     this.state = {
