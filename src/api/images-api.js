@@ -1,25 +1,15 @@
-import PropTypes from 'prop-types';
 const URL = 'https://pixabay.com/api/';
 const API_KEY = '18257903-4453e2975e3dd917fd04b41f9';
 
-const fetchAPI = ({ searchQuery, page = 1, pageSize = 12 }) => {
-  return fetch(
-    `${URL}?key=${API_KEY}&q=${searchQuery}&per_page=${pageSize}&page=${page}
-      &image_type=photo&orientation=horizontal`
-  )
-    .then((res) => res.json())
-    .then(({ hits: images, totalHits }) => {
-      if (!images.length) {
-        throw new Error('unfortunately, your request not found.');
-      }
-      return { totalHits, images };
-    });
+const getFetch = () => {
+  return async (searchQuery = 'cats', page = 1, pageSize = 12) => {
+    const response = await fetch(`${URL}?key=${API_KEY}&q=${searchQuery}&per_page=${pageSize}&page=${page}
+      &image_type=photo&orientation=horizontal`);
+    const { hits: images, totalHits } = await response.json();
+    return { totalHits, images };
+  };
 };
 
-fetchAPI.propTypes = {
-  searchQuery: PropTypes.string.isRequired,
-  page: PropTypes.number.isRequired,
-  pageSize: PropTypes.number.isRequired,
-};
+const fetchAPI = getFetch();
 
 export default fetchAPI;

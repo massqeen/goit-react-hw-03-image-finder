@@ -12,7 +12,7 @@ const Searchbar = ({ onSubmit }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (query.trim() === '') {
-      toast.error('Please enter your query', {
+      toast.warn('Please enter your query', {
         position: 'top-right',
       });
       return;

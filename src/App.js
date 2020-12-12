@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import Button from './components/Button/Button';
 import Container from './components/Container/Container';
 import ImageGallery from './components/ImageGallery/ImageGallery';
@@ -18,7 +18,7 @@ const Status = {
 const App = () => {
   const [galleryImages, setImages] = useState([]);
   const [totalImages, setTotalImages] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('nature');
+  const [searchQuery, setSearchQuery] = useState();
   const [page, setPage] = useState(1);
   const [largeImageUrl, setLargeImageUrl] = useState(null);
   const [modalImgTags, setModalImgTags] = useState(null);
@@ -26,7 +26,31 @@ const App = () => {
   const [showModal, setShowModal] = useState(false);
   const [status, setStatus] = useState(Status.IDLE);
 
-  useEffect(() => fetchImages(), [searchQuery]);
+  useEffect(() => {
+    setStatus(Status.PENDING);
+    (async () => {
+      try {
+        const response = await fetchAPI(searchQuery, page);
+        const { images, totalHits } = response;
+        if (!images.length) {
+          toast.warn('Sorry, nothing found :(');
+          setStatus(Status.IDLE);
+          return;
+        }
+        setImages((prevState) => [...prevState, ...images]);
+        setStatus(Status.RESOLVED);
+        setTotalImages(totalHits);
+
+        if (page !== 1) {
+          scrollToBottom();
+        }
+      } catch (err) {
+        setError(err);
+        toast.error(err.message);
+        setStatus(Status.REJECTED);
+      }
+    })();
+  }, [searchQuery, page]);
 
   const scrollToBottom = () => {
     window.scrollTo({
@@ -35,24 +59,8 @@ const App = () => {
     });
   };
 
-  const fetchImages = () => {
-    setStatus(Status.PENDING);
-
-    fetchAPI({ searchQuery, page })
-      .then(({ totalHits, images }) => {
-        setImages((prevState) => [...prevState, ...images]);
-        setPage((prevState) => prevState + 1);
-        setTotalImages(totalHits);
-        setStatus(Status.RESOLVED);
-
-        if (page !== 1) {
-          scrollToBottom();
-        }
-      })
-      .catch((err) => {
-        setError(err);
-        setStatus(Status.REJECTED);
-      });
+  const loadMoreHandler = () => {
+    setPage((prevState) => prevState + 1);
   };
 
   const handleSearchFormSubmit = (query) => {
@@ -88,11 +96,12 @@ const App = () => {
     );
   }
 
-  if (status === Status.REJECTED) {
+  if (status === Status.REJECTED && error) {
     return (
       <Container>
         <Searchbar onSubmit={handleSearchFormSubmit} />
-        <p>{`Whoops, ${error.message}`}</p>
+        <ToastContainer autoClose={4000} />
+        <p>{'Whoops... :( '}</p>
       </Container>
     );
   }
@@ -107,8 +116,8 @@ const App = () => {
         onSetImgData={setModalImgData}
       />
 
-      {totalImages > galleryImages.length && (
-        <Button onLoadMore={fetchImages} />
+      {galleryImages.length > 0 && totalImages > galleryImages.length && (
+        <Button onLoadMore={loadMoreHandler} />
       )}
 
       <ToastContainer autoClose={4000} />
