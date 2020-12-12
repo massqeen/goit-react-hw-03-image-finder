@@ -1,13 +1,13 @@
 import PropTypes from 'prop-types';
-import ImageGalleryItem from '../ImageGalleryItem/ImageGalleryItem';
+import ImageGalleryItem from './ImageGalleryItem/ImageGalleryItem';
 import styles from './ImageGallery.module.css';
 
 const ImageGallery = ({ images, openModal, onSetImgData }) => {
   return (
     <ul className={styles.gallery}>
-      {images.map((img) => (
+      {images.map((img, i) => (
         <ImageGalleryItem
-          key={img.id}
+          key={i}
           urlPreview={img.webformatURL}
           urlFull={img.largeImageURL}
           tags={img.tags}

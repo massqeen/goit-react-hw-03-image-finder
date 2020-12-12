@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import PropTypes from 'prop-types';
 import { css } from '@emotion/core';
 import PacmanLoader from 'react-spinners/PacmanLoader';
 
@@ -9,25 +9,19 @@ const override = css`
   border-color: red;
 `;
 
-class Spinner extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      loading: true,
-    };
-  }
+const Spinner = ({ loading }) => (
+  <div className="sweet-loading">
+    <PacmanLoader
+      css={override}
+      size={32}
+      color={'#303f9f'}
+      loading={loading}
+    />
+  </div>
+);
 
-  render() {
-    return (
-      <div className="sweet-loading">
-        <PacmanLoader
-          css={override}
-          size={32}
-          color={'#303f9f'}
-          loading={this.state.loading}
-        />
-      </div>
-    );
-  }
-}
+Spinner.propTypes = {
+  loading: PropTypes.bool.isRequired,
+};
+
 export default Spinner;
