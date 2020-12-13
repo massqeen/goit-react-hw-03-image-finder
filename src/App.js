@@ -7,6 +7,7 @@ import fetchAPI from './api/images-api';
 import Modal from './components/Modal/Modal';
 import Searchbar from './components/Searchbar/Searchbar';
 import Spinner from './components/Spinner';
+import ScrollTop from './components/ScrollTop/ScrollTop';
 
 const Status = {
   IDLE: 'idle',
@@ -107,27 +108,30 @@ const App = () => {
   }
 
   return (
-    <Container>
-      <Searchbar onSubmit={handleSearchFormSubmit} />
+    <>
+      <Container>
+        <Searchbar onSubmit={handleSearchFormSubmit} />
 
-      <ImageGallery
-        images={galleryImages}
-        openModal={toggleModal}
-        onSetImgData={setModalImgData}
-      />
+        <ImageGallery
+          images={galleryImages}
+          openModal={toggleModal}
+          onSetImgData={setModalImgData}
+        />
 
-      {galleryImages.length > 0 && totalImages > galleryImages.length && (
-        <Button onLoadMore={loadMoreHandler} />
-      )}
+        {galleryImages.length > 0 && totalImages > galleryImages.length && (
+          <Button onLoadMore={loadMoreHandler} />
+        )}
 
-      <ToastContainer autoClose={4000} />
+        <ToastContainer autoClose={4000} />
 
-      {showModal && (
-        <Modal onClose={toggleModal}>
-          <img src={largeImageUrl} alt={modalImgTags} />
-        </Modal>
-      )}
-    </Container>
+        {showModal && (
+          <Modal onClose={toggleModal}>
+            <img src={largeImageUrl} alt={modalImgTags} />
+          </Modal>
+        )}
+      </Container>
+      <ScrollTop />
+    </>
   );
 };
 
