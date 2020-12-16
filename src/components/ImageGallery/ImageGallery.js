@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import ImageGalleryItem from './ImageGalleryItem/ImageGalleryItem';
 import styles from './ImageGallery.module.css';
 
-const ImageGallery = ({ images, openModal, onSetImgData }) => {
+const ImageGallery = ({ images, onSetImgData }) => {
   return (
     <ul className={styles.gallery}>
       {images.map((img, i) => (
@@ -11,7 +11,6 @@ const ImageGallery = ({ images, openModal, onSetImgData }) => {
           urlPreview={img.webformatURL}
           urlFull={img.largeImageURL}
           tags={img.tags}
-          openModal={openModal}
           onSetImgData={onSetImgData}
         />
       ))}
@@ -21,7 +20,6 @@ const ImageGallery = ({ images, openModal, onSetImgData }) => {
 
 ImageGallery.propTypes = {
   images: PropTypes.array.isRequired,
-  openModal: PropTypes.func.isRequired,
   onSetImgData: PropTypes.func.isRequired,
 };
 

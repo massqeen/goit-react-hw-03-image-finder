@@ -5,7 +5,6 @@ const ImageGalleryItem = ({
   urlPreview = 'http://placehold.it/600x400',
   urlFull = 'http://placehold.it/600x400',
   tags = '',
-  openModal,
   onSetImgData,
 }) => {
   return (
@@ -16,7 +15,6 @@ const ImageGalleryItem = ({
         className={styles.image}
         onClick={() => {
           onSetImgData({ urlFull, tags });
-          openModal();
         }}
       />
     </li>
@@ -27,7 +25,6 @@ ImageGalleryItem.propTypes = {
   urlPreview: PropTypes.string.isRequired,
   urlFull: PropTypes.string.isRequired,
   tags: PropTypes.string,
-  openModal: PropTypes.func.isRequired,
   onSetImgData: PropTypes.func.isRequired,
 };
 

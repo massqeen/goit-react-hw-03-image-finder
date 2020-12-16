@@ -3,11 +3,12 @@ import { toast, ToastContainer } from 'react-toastify';
 import Button from './components/Button/Button';
 import Container from './components/Container/Container';
 import ImageGallery from './components/ImageGallery/ImageGallery';
-import fetchAPI from './api/images-api';
+import fetchAPI from './helpers/images-api';
 import Modal from './components/Modal/Modal';
 import Searchbar from './components/Searchbar/Searchbar';
 import Spinner from './components/Spinner';
 import ScrollTop from './components/ScrollTop/ScrollTop';
+import scrollToBottom from './helpers/scrollToBottom';
 
 const Status = {
   IDLE: 'idle',
@@ -24,7 +25,6 @@ const App = () => {
   const [largeImageUrl, setLargeImageUrl] = useState(null);
   const [modalImgTags, setModalImgTags] = useState(null);
   const [error, setError] = useState(null);
-  const [showModal, setShowModal] = useState(false);
   const [status, setStatus] = useState(Status.IDLE);
 
   useEffect(() => {
@@ -53,13 +53,6 @@ const App = () => {
     })();
   }, [searchQuery, page]);
 
-  const scrollToBottom = () => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'smooth',
-    });
-  };
-
   const loadMoreHandler = () => {
     setPage((prevState) => prevState + 1);
   };
@@ -80,37 +73,15 @@ const App = () => {
   };
 
   const toggleModal = () => {
-    setShowModal((prevState) => !prevState);
+    setLargeImageUrl('');
   };
-
-  if (status === Status.PENDING) {
-    return (
-      <Container>
-        <Searchbar onSubmit={handleSearchFormSubmit} />
-        <ImageGallery
-          images={galleryImages}
-          openModal={toggleModal}
-          onSetImgData={setModalImgData}
-        />
-        <Spinner loading={true} />;
-      </Container>
-    );
-  }
-
-  if (status === Status.REJECTED && error) {
-    return (
-      <Container>
-        <Searchbar onSubmit={handleSearchFormSubmit} />
-        <ToastContainer autoClose={4000} />
-        <p>{'Whoops... :( '}</p>
-      </Container>
-    );
-  }
 
   return (
     <>
+      {' '}
+      <Searchbar onSubmit={handleSearchFormSubmit} />
       <Container>
-        <Searchbar onSubmit={handleSearchFormSubmit} />
+        {status === Status.REJECTED && error && <p>{'Whoops... :( '}</p>}
 
         <ImageGallery
           images={galleryImages}
@@ -118,19 +89,21 @@ const App = () => {
           onSetImgData={setModalImgData}
         />
 
-        {galleryImages.length > 0 && totalImages > galleryImages.length && (
+        {status === Status.PENDING && <Spinner loading={true} />}
+
+        {status === Status.RESOLVED && totalImages > galleryImages.length && (
           <Button onLoadMore={loadMoreHandler} />
         )}
 
         <ToastContainer autoClose={4000} />
 
-        {showModal && (
+        {largeImageUrl && (
           <Modal onClose={toggleModal}>
             <img src={largeImageUrl} alt={modalImgTags} />
           </Modal>
         )}
+        <ScrollTop />
       </Container>
-      <ScrollTop />
     </>
   );
 };
