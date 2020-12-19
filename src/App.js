@@ -1,14 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { ToastContainer } from 'react-toastify';
 import Container from './components/Container/Container';
 import ImageGallery from './components/ImageGallery/ImageGallery';
-import Modal from './components/Modal/Modal';
 import Searchbar from './components/Searchbar/Searchbar';
 import Spinner from './components/Spinner';
-import ScrollTop from './components/ScrollTop/ScrollTop';
 import useInfiniteScroll from './hooks/useInfiniteScroll';
 import useLazyLoading from './hooks/useLazyLoading';
 import useFetch from './hooks/useFetch';
+const Modal = React.lazy(() => import('./components/Modal/Modal'));
+const ScrollTop = React.lazy(() => import('./components/ScrollTop/ScrollTop'));
 
 const Status = {
   IDLE: 'idle',
@@ -87,12 +87,14 @@ const App = () => {
 
         <ToastContainer autoClose={4000} />
 
-        {largeImageUrl && (
-          <Modal onClose={toggleModal}>
-            <img src={largeImageUrl} alt={modalImgTags} />
-          </Modal>
-        )}
-        <ScrollTop searchQuery={searchQuery} />
+        <Suspense fallback={<div>Загрузка...</div>}>
+          {largeImageUrl && (
+            <Modal onClose={toggleModal}>
+              <img src={largeImageUrl} alt={modalImgTags} />
+            </Modal>
+          )}
+          <ScrollTop searchQuery={searchQuery} />
+        </Suspense>
       </Container>
     </>
   );
