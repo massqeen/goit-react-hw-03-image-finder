@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import Button from './components/Button/Button';
+import { useState, useEffect, useRef } from 'react';
+import { ToastContainer } from 'react-toastify';
 import Container from './components/Container/Container';
 import ImageGallery from './components/ImageGallery/ImageGallery';
-import fetchAPI from './helpers/images-api';
 import Modal from './components/Modal/Modal';
 import Searchbar from './components/Searchbar/Searchbar';
 import Spinner from './components/Spinner';
 import ScrollTop from './components/ScrollTop/ScrollTop';
-import scrollToBottom from './helpers/scrollToBottom';
+import useInfiniteScroll from './hooks/useInfiniteScroll';
+import useLazyLoading from './hooks/useLazyLoading';
+import useFetch from './hooks/useFetch';
 
 const Status = {
   IDLE: 'idle',
@@ -19,43 +19,37 @@ const Status = {
 
 const App = () => {
   const [galleryImages, setImages] = useState([]);
-  const [totalImages, setTotalImages] = useState(null);
-  const [searchQuery, setSearchQuery] = useState();
+  const [totalPages, setTotalPages] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('cats');
   const [page, setPage] = useState(1);
   const [largeImageUrl, setLargeImageUrl] = useState(null);
   const [modalImgTags, setModalImgTags] = useState(null);
   const [error, setError] = useState(null);
   const [status, setStatus] = useState(Status.IDLE);
+  const [isLastPage, setIsLastPage] = useState(false);
+
+  let bottomBoundaryRef = useRef(null);
+
+  useFetch(Status, page, isLastPage, searchQuery, {
+    setStatus,
+    setImages,
+    setTotalPages,
+    setError,
+  });
+
+  useInfiniteScroll(bottomBoundaryRef, setPage);
 
   useEffect(() => {
-    setStatus(Status.PENDING);
-    (async () => {
-      try {
-        const response = await fetchAPI(searchQuery, page);
-        const { images, totalHits } = response;
-        if (!images.length) {
-          toast.warn('Sorry, nothing found :(');
-          setStatus(Status.IDLE);
-          return;
-        }
-        setImages((prevState) => [...prevState, ...images]);
-        setStatus(Status.RESOLVED);
-        setTotalImages(totalHits);
+    setIsLastPage(false);
+  }, [searchQuery]);
 
-        if (page !== 1) {
-          scrollToBottom();
-        }
-      } catch (err) {
-        setError(err);
-        toast.error(err.message);
-        setStatus(Status.REJECTED);
-      }
-    })();
-  }, [searchQuery, page]);
+  useEffect(() => {
+    if (totalPages === page || totalPages === 1) {
+      setIsLastPage(true);
+    }
+  }, [page, totalPages]);
 
-  const loadMoreHandler = () => {
-    setPage((prevState) => prevState + 1);
-  };
+  useLazyLoading('.image', galleryImages);
 
   const handleSearchFormSubmit = (query) => {
     if (query === searchQuery) {
@@ -72,9 +66,7 @@ const App = () => {
     setModalImgTags(tags);
   };
 
-  const toggleModal = () => {
-    setLargeImageUrl('');
-  };
+  const toggleModal = () => setLargeImageUrl('');
 
   return (
     <>
@@ -89,11 +81,9 @@ const App = () => {
           onSetImgData={setModalImgData}
         />
 
-        {status === Status.PENDING && <Spinner loading={true} />}
+        <div id="page-bottom-boundary" ref={bottomBoundaryRef} />
 
-        {status === Status.RESOLVED && totalImages > galleryImages.length && (
-          <Button onLoadMore={loadMoreHandler} />
-        )}
+        {status === Status.PENDING && <Spinner loading={true} />}
 
         <ToastContainer autoClose={4000} />
 
@@ -102,7 +92,7 @@ const App = () => {
             <img src={largeImageUrl} alt={modalImgTags} />
           </Modal>
         )}
-        <ScrollTop />
+        <ScrollTop searchQuery={searchQuery} />
       </Container>
     </>
   );

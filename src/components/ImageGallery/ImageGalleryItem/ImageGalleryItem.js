@@ -1,5 +1,6 @@
 import PropTypes from 'prop-types';
 import styles from './ImageGalleryItem.module.css';
+import preload from '../../../assets/images/870-300x300-blur_2-grayscale.jpg';
 
 const ImageGalleryItem = ({
   urlPreview = 'http://placehold.it/600x400',
@@ -10,9 +11,10 @@ const ImageGalleryItem = ({
   return (
     <li className={styles.item}>
       <img
-        src={urlPreview}
+        src={preload}
+        data-src={urlPreview}
         alt={tags}
-        className={styles.image}
+        className={`image ${styles.image}`}
         onClick={() => {
           onSetImgData({ urlFull, tags });
         }}
